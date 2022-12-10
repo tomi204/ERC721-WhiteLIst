@@ -8,7 +8,7 @@ contract MyNFT is ERC721A {
     uint256 _value;
     string public baseURI;
     address payable public owner;
-    //white list
+    //white list bool
     mapping(address => bool) public whiteList;
     //events
     event NFTMinted(
@@ -39,32 +39,35 @@ contract MyNFT is ERC721A {
         baseURI = _baseURI;
         token_count = 0;
     }
-    //function modifier
+    //@dev onlyWHitelisted pelople modifier
     modifier OnlyWhiteListed() {
         require(whiteList[msg.sender] == true, "you need to be white listed");
         _;
     }
+    //@dev modifier onlyOwner
     modifier onlyOwner(){
         require(owner == msg.sender, "you need to be the project owner");
         _;
     }
-    //minting function
+    //@dev minting function
     function mint(uint256 quantity) public payable OnlyWhiteListed {
         require(msg.value == _value);
         token_count += 1;
         _mint(msg.sender, quantity);
         emit NFTMinted("NFT minted");
     }
-    //white listing function
+    //@dev white listing function
     function whiteListAddress(address _address) public onlyOwner {
         whiteList[_address] = true;
         emit NFTWhiteListed("NFT white listed");
     }
-    //white list removal function
+    //@dev remove white list address
     function removeWhiteListAddress(address _address) public OnlyWhiteListed {
         whiteList[_address] = false;
         emit NFTWhiteListRemoved("NFT white list removed");
     }
+
+    // @dev See {IERC721Metadata-tokenURI}
       function tokenURI(uint256 tokenId)
         public
         view
